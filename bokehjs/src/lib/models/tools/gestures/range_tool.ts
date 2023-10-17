@@ -8,10 +8,10 @@ import type * as p from "core/properties"
 import {tool_icon_range} from "styles/icons.css"
 import {Node} from "../../coordinates/node"
 
-const frame_left = new Node({target: "frame", symbol: "left"})
-const frame_right = new Node({target: "frame", symbol: "right"})
-const frame_top = new Node({target: "frame", symbol: "top"})
-const frame_bottom = new Node({target: "frame", symbol: "bottom"})
+const frame_left = () => new Node({target: "frame", symbol: "left"})
+const frame_right = () => new Node({target: "frame", symbol: "right"})
+const frame_top = () => new Node({target: "frame", symbol: "top"})
+const frame_bottom = () => new Node({target: "frame", symbol: "bottom"})
 
 export class RangeToolView extends ToolView {
   declare model: RangeTool
@@ -56,10 +56,10 @@ const DEFAULT_RANGE_OVERLAY = () => {
     visible: true,
     editable: true,
     propagate_hover: true,
-    left_limit: frame_left,
-    right_limit: frame_right,
-    top_limit: frame_top,
-    bottom_limit: frame_bottom,
+    left_limit: frame_left(),
+    right_limit: frame_right(),
+    top_limit: frame_top(),
+    bottom_limit: frame_bottom(),
     fill_color: "lightgrey",
     fill_alpha: 0.5,
     line_color: "black",
@@ -138,16 +138,21 @@ export class RangeTool extends Tool {
       this.y_range.setv({start: bottom, end: top})
   }
 
+  private _frame_left = frame_left()
+  private _frame_right = frame_right()
+  private _frame_top = frame_top()
+  private _frame_bottom = frame_bottom()
+
   update_overlay_from_ranges(): void {
     const {x_range, y_range} = this
     const has_x = x_range != null
     const has_y = y_range != null
 
     this.overlay.update({
-      left: has_x ? x_range.start : frame_left,
-      right: has_x ? x_range.end : frame_right,
-      top: has_y ? y_range.end : frame_top,
-      bottom: has_y ? y_range.start : frame_bottom,
+      left: has_x ? x_range.start : this._frame_left,
+      right: has_x ? x_range.end : this._frame_right,
+      top: has_y ? y_range.end : this._frame_top,
+      bottom: has_y ? y_range.start : this._frame_bottom,
     })
 
     if (!has_x && !has_y) {
