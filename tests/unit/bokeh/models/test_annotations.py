@@ -18,11 +18,10 @@ import pytest ; pytest
 
 # Standard library imports
 from datetime import datetime
-from math import isnan
 from unittest import mock
 
 # Bokeh imports
-from bokeh.core.properties import field, value
+from bokeh.core.properties import UnsetValueError, field, value
 from bokeh.core.validation import check_integrity, process_validation_issues
 from bokeh.models import (
     Arrow,
@@ -238,16 +237,20 @@ def test_Arrow() -> None:
 
 def test_BoxAnnotation() -> None:
     box = BoxAnnotation()
-    assert isnan(box.left)
+    with pytest.raises(UnsetValueError):
+        box.left
     assert box.left_units == "data"
     assert box.left_limit is None
-    assert isnan(box.right)
+    with pytest.raises(UnsetValueError):
+        box.right
     assert box.right_units == "data"
     assert box.right_limit is None
-    assert isnan(box.bottom)
+    with pytest.raises(UnsetValueError):
+        box.bottom
     assert box.bottom_units == "data"
     assert box.bottom_limit is None
-    assert isnan(box.top)
+    with pytest.raises(UnsetValueError):
+        box.top
     assert box.top_units == "data"
     assert box.top_limit is None
     assert box.x_range_name == "default"
